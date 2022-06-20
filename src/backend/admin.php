@@ -48,11 +48,12 @@
             if($name != '' && $surname != '' && $domicle != '' && $post_code != '' && $street != '' && $adress != '' && $department != '' && $job != '' && $id_shop != ''){
 
                 try{
-                    $email = filter_input(INPUT_POST, 'email', FILER_VALIDATE_EMAIL);
+                    //$email = filter_input(INPUT_POST, 'email', FILER_VALIDATE_EMAIL);
 
-                    $query = $conn->prepare('INSERT INTO employers VALUES (NULL, name, surname, :email, domicle, post_code, street, adress, department, job, id_shop )');
-                    $query->bindValue(':email', $email, PDO::PARAM_STR);
-                    $query->execute();
+                    //$query = $conn->prepare("INSERT INTO employers (`id_employee`, `name`, `surname`, `email`, `domicle`, `post_code`, `street`, `adress`, `id_department`, `id_job`, `id_shop`) VALUES (NULL, '$name', '$surname', ':email', '$domicle', '$post_code', '$street', '$adress', '$department', '$job', '$id_shop' )");
+                    //$query->bindValue(':email', $email, PDO::PARAM_STR);
+                    //$query->execute();
+                    $conn->query("INSERT INTO employers (`id_employee`, `name`, `surname`, `email`, `domicle`, `post_code`, `street`, `adress`, `id_department`, `id_job`, `id_shop`) VALUES (NULL, '$name', '$surname', '$email', '$domicle', '$post_code', '$street', '$adress', '$department', '$job', '$id_shop' )");
 
                     $info = "UDAŁO SIĘ DODAĆ PRACOWNIKA";
                 }catch(PDOException $error){
@@ -65,7 +66,7 @@
                 $_SESSION['given_domicle'] = $_POST['domicle'];
                 $_SESSION['given_post_code'] = $_POST['post_code'];
                 $_SESSION['given_street'] = $_POST['street'];
-                $_SESSION['given_adress'] = $_POST['address'];
+                $_SESSION['given_adress'] = $_POST['adress'];
                 $_SESSION['given_department'] = $_POST['department'];
                 $_SESSION['given_job'] = $_POST['job'];
                 $_SESSION['given_id_shop'] = $_POST['id_shop'];
@@ -148,6 +149,8 @@
                     <?php 
                     //DODAWANIE PRACOWNIKA
                         }}else if($menu == 2){
+
+                            $jobsToSelect = $conn->query("SELECT * FROM jobs");
                         ?>
                             <h1>Dodaj Pracownika</h1> 
                             <form action="" class="form" method="post">
@@ -161,9 +164,19 @@
                                     <option value="3">Dział Kreatywno-Marketingowy</option>
                                     <option value="4">Księgowości</option>
                                     <option value="5">Pracy i Pracownika</option>
+                                    <option value="6">Sprzedaży</option>
                                 </select>
                                 <p>Wybierz stanowisko</p>
-                                <select name="job"></select>
+                                <select name="job">
+                                    <?php 
+                                        while($row = $jobsToSelect->fetch(PDO::FETCH_ASSOC)){
+                                            $row_id_job = $row['id_job'];
+                                            $row_id_department = $row['ID_DEPARTMENT'];
+                                            $row_name = $row['name'];
+                                            echo "<option value='$row_id_jobs'>$row_name</option>";
+                                        }
+                                    ?>
+                                </select>
                                 <input type="text" name="id_shop" placeholder="podaj numer sklepu">
                                 <input type="email" name="email" placeholder="Podaj adres email pracownika example@mail.pl">
                                 <input type="text" name="domicle" placeholder="Podaj miejsce zamieszkania">
